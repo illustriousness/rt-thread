@@ -1,30 +1,46 @@
+# 导入操作系统接口模块
 import os
+# 导入系统相关的参数和功能模块
 import sys
+# 导入RT-Thread配置文件模块（包含编译器、平台等配置信息）
 import rtconfig
 
+# 获取RT-Thread根目录路径
+# 首先尝试从环境变量中获取RTT_ROOT
 if os.getenv('RTT_ROOT'):
     RTT_ROOT = os.getenv('RTT_ROOT')
+# 如果环境变量不存在，则使用相对路径计算RT-Thread根目录
+# 从当前目录向上5级（../../../../../../）到达RT-Thread根目录
 else:
     RTT_ROOT = os.path.normpath(os.getcwd() + '/../../../../..')
 
+# 将RT-Thread的tools目录添加到Python搜索路径中
+# 这样就可以导入RT-Thread提供的构建工具模块
 sys.path = sys.path + [os.path.join(RTT_ROOT, 'tools')]
+# 尝试导入RT-Thread的构建工具模块
 try:
     from building import *
+# 如果导入失败，说明RT-Thread根目录配置有误
 except:
     print('Cannot found RT-Thread root directory, please check RTT_ROOT')
     print(RTT_ROOT)
     exit(-1)
 
+# 定义BSP包检查函数
+# 该函数在构建前检查必需的软件包是否已安装
 def bsp_pkg_check():
     import subprocess
 
+    # 定义需要检查的软件包路径列表
     check_paths = [
-        os.path.join("packages", "nxp-mcx-cmsis-latest"),
-        os.path.join("packages", "nxp-mcx-series-latest"),
+        os.path.join("packages", "nxp-mcx-cmsis-latest"),      # NXP MCX CMSIS驱动包
+        os.path.join("packages", "nxp-mcx-series-latest"),     # NXP MCX系列驱动包
     ]
 
+    # 检查所有路径是否都存在，如果有任何一个不存在，则需要更新
     need_update = not all(os.path.exists(p) for p in check_paths)
 
+    # 如果需要更新，打印提示信息并退出构建
     if need_update:
         print("\n===============================================================================")
         print("Dependency packages missing, please running 'pkgs --update'...")
@@ -32,52 +48,82 @@ def bsp_pkg_check():
         print("===============================================================================")
         exit(1)
 
+# 注册预构建动作，在构建开始前执行包检查
 RegisterPreBuildingAction(bsp_pkg_check)
 
+# 设置目标文件名，格式为：rtthread + 目标文件扩展名
+# 扩展名由rtconfig.TARGET_EXT定义（如.elf, .bin等）
 TARGET = 'rtthread.' + rtconfig.TARGET_EXT
 
+# 根据不同的编译平台配置构建环境
+# 如果使用ARM编译器（ARMCC/Keil MDK）
 if rtconfig.PLATFORM == 'armcc':
     env = Environment(tools = ['mingw'],
-        AS = rtconfig.AS, ASFLAGS = rtconfig.AFLAGS,
-        CC = rtconfig.CC, CFLAGS = rtconfig.CFLAGS,
-        CXX = rtconfig.CXX, CXXFLAGS = rtconfig.CXXFLAGS,
-        AR = rtconfig.AR, ARFLAGS = '-rc',
-        LINK = rtconfig.LINK, LINKFLAGS = rtconfig.LFLAGS,
-        # overwrite cflags, because cflags has '--C99'
+        AS = rtconfig.AS, ASFLAGS = rtconfig.AFLAGS,          # 汇编器及其参数
+        CC = rtconfig.CC, CFLAGS = rtconfig.CFLAGS,           # C编译器及其参数
+        CXX = rtconfig.CXX, CXXFLAGS = rtconfig.CXXFLAGS,     # C++编译器及其参数
+        AR = rtconfig.AR, ARFLAGS = '-rc',                     # 归档工具及其参数
+        LINK = rtconfig.LINK, LINKFLAGS = rtconfig.LFLAGS,    # 链接器及其参数
+        # 覆盖C++编译命令，因为cflags中包含'--C99'选项
         CXXCOM = '$CXX -o $TARGET --cpp -c $CXXFLAGS $_CCCOMCOM $SOURCES')
+# 使用其他编译器（如GCC）
 else:
     env = Environment(tools = ['mingw'],
-        AS = rtconfig.AS, ASFLAGS = rtconfig.AFLAGS,
-        CC = rtconfig.CC, CFLAGS = rtconfig.CFLAGS,
-        CXX = rtconfig.CXX, CXXFLAGS = rtconfig.CXXFLAGS,
-        AR = rtconfig.AR, ARFLAGS = '-rc',
-        LINK = rtconfig.LINK, LINKFLAGS = rtconfig.LFLAGS,
+        AS = rtconfig.AS, ASFLAGS = rtconfig.AFLAGS,          # 汇编器及其参数
+        CC = rtconfig.CC, CFLAGS = rtconfig.CFLAGS,           # C编译器及其参数
+        CXX = rtconfig.CXX, CXXFLAGS = rtconfig.CXXFLAGS,     # C++编译器及其参数
+        AR = rtconfig.AR, ARFLAGS = '-rc',                     # 归档工具及其参数
+        LINK = rtconfig.LINK, LINKFLAGS = rtconfig.LFLAGS,    # 链接器及其参数
         CXXCOM = '$CXX -o $TARGET -c $CXXFLAGS $_CCCOMCOM $SOURCES')
 
+# 将编译器执行路径添加到环境变量PATH的前面
+# 确保系统能找到编译器可执行文件
 env.PrependENVPath('PATH', rtconfig.EXEC_PATH)
 
+# 如果使用armclang编译器，需要特殊配置
+if rtconfig.PLATFORM in ['armclang']:
+    # 替换汇编命令格式 - armasm不支持-x assembler-with-cpp等GCC参数
+    env.Replace(ASCOM = '$AS $ASFLAGS -o $TARGET $SOURCES')
+
+# 如果使用IAR编译器，需要特殊配置
 if rtconfig.PLATFORM in ['iccarm']:
+    # 替换C编译命令格式
     env.Replace(CCCOM = ['$CC $CFLAGS $CPPFLAGS $_CPPDEFFLAGS $_CPPINCFLAGS -o $TARGET $SOURCES'])
+    # 清空归档工具参数
     env.Replace(ARFLAGS = [''])
+    # 在链接命令中添加生成map文件的选项
     env.Replace(LINKCOM = env["LINKCOM"] + ' --map rtthread.map')
 
+# 导出RT-Thread根目录，供其他SConscript文件使用
 Export('RTT_ROOT')
+# 导出RT-Thread配置，供其他SConscript文件使用
 Export('rtconfig')
 
+# 获取SDK根目录的绝对路径（当前BSP目录）
 SDK_ROOT = os.path.abspath('./')
 
+# 确定Libraries库目录的位置
+# 优先在当前BSP目录下查找Libraries目录
 if os.path.exists(SDK_ROOT + '/Libraries'):
     libraries_path_prefix = SDK_ROOT + '/Libraries'
+# 如果当前目录没有，则在上级目录查找
 else:
     libraries_path_prefix = os.path.dirname(SDK_ROOT) + '/Libraries'
 
+# 设置SDK库路径
 SDK_LIB = libraries_path_prefix
+# 导出SDK库路径，供其他SConscript文件使用
 Export('SDK_LIB')
 
-# prepare building environment
+# 准备构建环境
+# PrepareBuilding函数会收集所有源文件、头文件路径等信息
+# has_libcpu=False 表示不使用RT-Thread的libcpu库（该BSP使用厂商SDK）
 objs = PrepareBuilding(env, RTT_ROOT, has_libcpu=False)
 
+# 扩展对象列表，添加Libraries目录下的drivers驱动源文件
+# 通过执行drivers目录下的SConscript脚本来收集驱动文件
 objs.extend(SConscript(os.path.join(libraries_path_prefix, 'drivers', 'SConscript')))
 
-# make a building
+# 执行构建过程
+# 根据收集到的所有源文件（objs）生成目标文件（TARGET）
 DoBuilding(TARGET, objs)

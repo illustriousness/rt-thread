@@ -20,7 +20,7 @@ if  CROSS_TOOL == 'gcc':
     EXEC_PATH   = r'C:\Users\XXYYZZ'
 elif CROSS_TOOL == 'keil':
     PLATFORM    = 'armclang'
-    EXEC_PATH   = r'C:/Keil_v5'
+    EXEC_PATH   = r'C:\Users\admin\.eide\tools\armclang_v6_cracked'
 elif CROSS_TOOL == 'iar':
     PLATFORM    = 'iccarm'
     EXEC_PATH   = r'C:\Program Files\IAR Systems\Embedded Workbench 9.1'
@@ -119,14 +119,20 @@ elif PLATFORM == 'armclang':
     CFLAGS += ' -mcpu=' + CPU
     CFLAGS += ' -c -fno-rtti -funsigned-char -fshort-enums -fshort-wchar '
     CFLAGS += ' -gdwarf-3 -ffunction-sections '
-    AFLAGS = DEVICE + ' --apcs=interwork '
+    AFLAGS = ' --cpu Cortex-M33 --apcs=interwork '
     LFLAGS = DEVICE + ' --info sizes --info totals --info unused --info veneers '
     LFLAGS += ' --list rt-thread.map '
     LFLAGS += r' --strict --scatter "board\linker_scripts\MCXA156_flash.sct" '
-    CFLAGS += ' -I' + EXEC_PATH + '/ARM/ARMCLANG/include'
-    LFLAGS += ' --libpath=' + EXEC_PATH + '/ARM/ARMCLANG/lib'
 
-    EXEC_PATH += '/ARM/ARMCLANG/bin/'
+    # Check if using standard Keil installation or standalone armclang
+    if os.path.exists(os.path.join(EXEC_PATH, 'ARM', 'ARMCLANG')):
+        CFLAGS += ' -I' + EXEC_PATH + '/ARM/ARMCLANG/include'
+        LFLAGS += ' --libpath=' + EXEC_PATH + '/ARM/ARMCLANG/lib'
+        EXEC_PATH += '/ARM/ARMCLANG/bin/'
+    else:
+        CFLAGS += ' -I' + EXEC_PATH + '/include'
+        LFLAGS += ' --libpath=' + EXEC_PATH + '/lib'
+        EXEC_PATH += '/bin/'
 
     if BUILD == 'debug':
         CFLAGS += ' -g -O1' # armclang recommend
