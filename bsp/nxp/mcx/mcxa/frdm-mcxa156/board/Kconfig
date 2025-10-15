@@ -19,6 +19,12 @@ menu "On-chip Peripheral Drivers"
         select RT_USING_PIN
         default y
 
+    config BSP_USING_ONCHIP_FLASH
+        bool "Enable On-chip Flash"
+        select RT_USING_FAL
+        select FAL_PART_HAS_TABLE_CFG
+        default n
+
     menuconfig BSP_USING_UART
         config BSP_USING_UART
             bool "Enable UART"
@@ -96,6 +102,15 @@ menu "On-chip Peripheral Drivers"
         select RT_USING_SDIO
         select RT_USING_DFS
         select RT_USING_DFS_ELMFAT
+        default n
+
+    config BSP_USING_FS_ON_FLASH
+        bool "Enable Filesystem on On-chip Flash (using FAL)"
+        select BSP_USING_ONCHIP_FLASH
+        select RT_USING_DFS
+        select RT_USING_DFS_V1
+        select RT_USING_MTD_NOR
+        select PKG_USING_LITTLEFS
         default y
 
     config BSP_USING_RTC
@@ -181,16 +196,23 @@ menu "Board extended module Drivers"
     endif
 
     menuconfig BSP_USING_P3T1755
-        bool "Enable P3T1755"
+        bool "Enable P3T1755 Temperature Sensor"
         default n
         select BSP_USING_I2C
         select BSP_USING_I2C0
-        select PKG_USING_P3T1755
-        
+
     if BSP_USING_P3T1755
         config P3T1755_I2C_BUS_NAME
-            string "P3T1755 BUS NAME"
+            string "P3T1755 I2C Bus Name"
             default "i2c0"
+
+        config P3T1755_I2C_ADDRESS
+            hex "P3T1755 I2C Address"
+            default 0x48
+            range 0x48 0x4F
+            help
+                P3T1755 I2C address depends on A0, A1, A2 pin configuration.
+                Default is 0x48 (A2=0, A1=0, A0=0)
     endif
 endmenu
 

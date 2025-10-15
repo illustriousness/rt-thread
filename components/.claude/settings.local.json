@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//d/code/git/rt-thread/bsp/nxp/mcx/mcxa/frdm-mcxa156/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

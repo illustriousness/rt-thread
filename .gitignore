@@ -68,3 +68,4 @@ vdso.lds
 
 # mac
 .DS_Store
+bsp/nxp/mcx/mcxa/frdm-mcxa156/

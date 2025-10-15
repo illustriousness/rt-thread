@@ -137,6 +137,61 @@ void BOARD_InitPins(void)
     /* PORT0_3 (pin 79) is configured as LPUART0_TXD */
     PORT_SetPinConfig(PORT0, 3U, &port0_3_pin79_config);
 
+#ifdef BSP_USING_I2C0
+    /* Release LPI2C0 resets */
+    RESET_ReleasePeripheralReset(kLPI2C0_RST_SHIFT_RSTn);
+
+    const port_pin_config_t port0_16_pin8_config = {/* Internal pull-up resistor is enabled */
+                                                    kPORT_PullUp,
+                                                    /* Low internal pull resistor value is selected. */
+                                                    kPORT_LowPullResistor,
+                                                    /* Fast slew rate is configured */
+                                                    kPORT_FastSlewRate,
+                                                    /* Passive input filter is disabled */
+                                                    kPORT_PassiveFilterDisable,
+                                                    /* Open drain output is enabled */
+                                                    kPORT_OpenDrainEnable,
+                                                    /* Low drive strength is configured */
+                                                    kPORT_LowDriveStrength,
+                                                    /* Normal drive strength is configured */
+                                                    kPORT_NormalDriveStrength,
+                                                    /* Pin is configured as LPI2C0_SDA */
+                                                    kPORT_MuxAlt2,
+                                                    /* Digital input enabled */
+                                                    kPORT_InputBufferEnable,
+                                                    /* Digital input is not inverted */
+                                                    kPORT_InputNormal,
+                                                    /* Pin Control Register fields [15:0] are not locked */
+                                                    kPORT_UnlockRegister};
+    /* PORT0_16 (pin 8) is configured as LPI2C0_SDA */
+    PORT_SetPinConfig(PORT0, 16U, &port0_16_pin8_config);
+
+    const port_pin_config_t port0_17_pin9_config = {/* Internal pull-up resistor is enabled */
+                                                    kPORT_PullUp,
+                                                    /* Low internal pull resistor value is selected. */
+                                                    kPORT_LowPullResistor,
+                                                    /* Fast slew rate is configured */
+                                                    kPORT_FastSlewRate,
+                                                    /* Passive input filter is disabled */
+                                                    kPORT_PassiveFilterDisable,
+                                                    /* Open drain output is enabled */
+                                                    kPORT_OpenDrainEnable,
+                                                    /* Low drive strength is configured */
+                                                    kPORT_LowDriveStrength,
+                                                    /* Normal drive strength is configured */
+                                                    kPORT_NormalDriveStrength,
+                                                    /* Pin is configured as LPI2C0_SCL */
+                                                    kPORT_MuxAlt2,
+                                                    /* Digital input enabled */
+                                                    kPORT_InputBufferEnable,
+                                                    /* Digital input is not inverted */
+                                                    kPORT_InputNormal,
+                                                    /* Pin Control Register fields [15:0] are not locked */
+                                                    kPORT_UnlockRegister};
+    /* PORT0_17 (pin 9) is configured as LPI2C0_SCL */
+    PORT_SetPinConfig(PORT0, 17U, &port0_17_pin9_config);
+#endif
+
     const port_pin_config_t port3_12_pin63_config = {/* Internal pull-up resistor is enabled */
                                                      kPORT_PullDisable,
                                                      /* Low internal pull resistor value is selected. */

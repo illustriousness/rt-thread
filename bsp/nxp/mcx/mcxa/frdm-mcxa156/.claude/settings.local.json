@@ -1,8 +1,29 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git push:*)",
-      "Bash(gh pr create --repo RT-Thread/rt-thread --base master --head illustriousness:dev_nxp --title \"[bsp/nxp/mcx/mcxa] Fix UART clock configuration type mismatch\" --body \"$(cat <<''EOF''\n## Summary\n\nFixed implicit type conversion warning in NXP MCXA series UART driver by correctly using the appropriate clock enum types.\n\n### Problem\nThe compiler reported a warning:\n```\nimplicit conversion from ''int'' to ''clock_name_t'' changes value from 16777216 to 0\n```\n\nThis occurred because the code was using `clock_attach_id_t` enum values (like `kFRO12M_to_LPUART0`) in a field that expects `clock_name_t` enum type.\n\n### Root Cause\n- The `mcx_uart` structure has two separate clock-related fields with different purposes:\n  - `clock_src` (type: `clock_name_t`): Used for getting clock frequency via `CLOCK_GetFreq()`\n  - `clock_attach_id` (type: `clock_attach_id_t`): Used for attaching clock source via `CLOCK_AttachClk()`\n\n- The original code incorrectly used `kFRO12M_to_LPUARTx` (a `clock_attach_id_t` value) for the `clock_src` field.\n\n### Changes Made\n1. **Fixed clock source field**: Now correctly uses `kCLOCK_Fro12M` (clock_name_t) for all three UARTs\n2. **Kept clock attach field**: Preserved `kFRO12M_to_LPUARTx` (clock_attach_id_t) for clock routing\n3. **Removed unnecessary conditionals**: Cleaned up CPU model-specific conditional compilation that was causing confusion\n4. **Fixed mcx_getc() function**: Changed from `kLPUART_RxDataRegFullInterruptEnable` to `kLPUART_RxDataRegFullFlag` for correct status checking\n\n### Testing\n- Tested on FRDM-MCXA156 board\n- UART transmission and reception working correctly\n- Compiler warning resolved\n\n### Impact\n- Fixes compilation warning\n- Ensures correct baud rate calculation by providing the right clock frequency\n- Improves code clarity by removing redundant conditional blocks\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\nEOF\n)\")"
+      "Read(//d/code/git/rt-thread/bsp/nxp/mcx/mcxa/Libraries/drivers/**)",
+      "Bash(scons:*)",
+      "WebSearch",
+      "Read(//d/code/git/rt-thread/components/fal/**)",
+      "Read(//d/code/git/rt-thread/components/**)",
+      "Read(//d/code/git/rt-thread/**)",
+      "WebFetch(domain:github.com)",
+      "Bash(git clone:*)",
+      "Bash(arm-none-eabi-size:*)",
+      "Bash(python:*)",
+      "Bash(python3:*)",
+      "WebFetch(domain:www.nxp.com)",
+      "Read(//mnt/d/code/git/rt-thread/bsp/nxp/mcx/mcxa/**)",
+      "Read(//mnt/d/code/git/rt-thread/bsp/nxp/mcx/mcxa/Libraries/drivers/**)",
+      "Read(//mnt/d/code/git/rt-thread/**)",
+      "Bash(arm-none-eabi-gcc:*)",
+      "Bash([ -d \"Libraries\" ])",
+      "Bash(arm-none-eabi-nm:*)",
+      "Bash(cat:*)",
+      "Bash(RTT_EXEC_PATH=/usr/bin scons:*)",
+      "WebFetch(domain:packages.rt-thread.org)",
+      "Bash([ -d \"packages\" ])",
+      "Bash(tee:*)"
     ],
     "deny": [],
     "ask": []

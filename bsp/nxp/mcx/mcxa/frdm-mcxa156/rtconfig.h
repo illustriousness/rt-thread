@@ -74,7 +74,7 @@
 
 /* end of rt_strnlen options */
 /* end of klibc options */
-#define RT_NAME_MAX 8
+#define RT_NAME_MAX 32
 #define RT_CPUS_NR 1
 #define RT_ALIGN_SIZE 8
 #define RT_THREAD_PRIORITY_32
@@ -85,10 +85,11 @@
 #define RT_HOOK_USING_FUNC_PTR
 #define RT_USING_IDLE_HOOK
 #define RT_IDLE_HOOK_LIST_SIZE 4
-#define IDLE_THREAD_STACK_SIZE 256
+#define IDLE_THREAD_STACK_SIZE 512
 #define RT_USING_TIMER_SOFT
 #define RT_TIMER_THREAD_PRIO 4
 #define RT_TIMER_THREAD_STACK_SIZE 512
+#define RT_USING_CPU_USAGE_TRACER
 
 /* kservice options */
 
@@ -115,6 +116,7 @@
 #define RT_USING_HEAP
 /* end of Memory Management */
 #define RT_USING_DEVICE
+#define RT_USING_DEVICE_OPS
 #define RT_USING_CONSOLE
 #define RT_CONSOLEBUF_SIZE 128
 #define RT_CONSOLE_DEVICE_NAME "uart0"
@@ -142,6 +144,7 @@
 #define FINSH_THREAD_STACK_SIZE 4096
 #define FINSH_USING_HISTORY
 #define FINSH_HISTORY_LINES 5
+#define FINSH_USING_WORD_OPERATION
 #define FINSH_USING_SYMTAB
 #define FINSH_CMD_SIZE 80
 #define MSH_USING_BUILT_IN_COMMANDS
@@ -151,18 +154,42 @@
 
 /* DFS: device virtual file system */
 
+#define RT_USING_DFS
+#define DFS_USING_POSIX
+#define DFS_USING_WORKDIR
+#define DFS_FD_MAX 16
+#define RT_USING_DFS_V1
+#define DFS_FILESYSTEMS_MAX 4
+#define DFS_FILESYSTEM_TYPES_MAX 4
 /* end of DFS: device virtual file system */
+#define RT_USING_FAL
+#define FAL_USING_DEBUG
+#define FAL_PART_HAS_TABLE_CFG
 
 /* Device Drivers */
 
 #define RT_USING_DEVICE_IPC
 #define RT_UNAMED_PIPE_NUMBER 64
+#define RT_USING_SYSTEM_WORKQUEUE
+#define RT_SYSTEM_WORKQUEUE_STACKSIZE 2048
+#define RT_SYSTEM_WORKQUEUE_PRIORITY 23
 #define RT_USING_SERIAL
 #define RT_USING_SERIAL_V1
 #define RT_SERIAL_USING_DMA
 #define RT_SERIAL_RB_BUFSZ 64
+#define RT_USING_I2C
+#define RT_USING_MTD_NOR
+#define RT_USING_SPI
 #define RT_USING_PIN
-#define RT_USING_HWTIMER
+#define RT_USING_CHERRYUSB
+#define RT_CHERRYUSB_DEVICE
+#define RT_CHERRYUSB_DEVICE_SPEED_FS
+#define RT_CHERRYUSB_DEVICE_KINETIS_MCX
+#define RT_CHERRYUSB_DEVICE_CDC_RNDIS
+#define CONFIG_USBDEV_REQUEST_BUFFER_LEN 512
+#define CONFIG_USBDEV_MSC_MAX_BUFSIZE 512
+#define CONFIG_USBDEV_RNDIS_USING_LWIP
+#define RT_CHERRYUSB_DEVICE_TEMPLATE_CDC_RNDIS
 /* end of Device Drivers */
 
 /* C/C++ and POSIX layer */
@@ -192,6 +219,66 @@
 
 /* Network */
 
+#define RT_USING_SAL
+#define SOCKET_TABLE_STEP_LEN 4
+
+/* Docking with protocol stacks */
+
+#define SAL_USING_LWIP
+/* end of Docking with protocol stacks */
+#define SAL_USING_POSIX
+#define RT_USING_NETDEV
+#define NETDEV_USING_IFCONFIG
+#define NETDEV_USING_PING
+#define NETDEV_USING_NETSTAT
+#define NETDEV_USING_AUTO_DEFAULT
+#define NETDEV_IPV4 1
+#define NETDEV_IPV6 0
+#define RT_USING_LWIP
+#define RT_USING_LWIP212
+#define RT_USING_LWIP_VER_NUM 0x20102
+#define RT_LWIP_MEM_ALIGNMENT 4
+#define RT_LWIP_IGMP
+#define RT_LWIP_ICMP
+#define RT_LWIP_DNS
+#define RT_LWIP_DHCP
+#define IP_SOF_BROADCAST 1
+#define IP_SOF_BROADCAST_RECV 1
+
+/* Static IPv4 Address */
+
+#define RT_LWIP_IPADDR "192.168.137.2"
+#define RT_LWIP_GWADDR "192.168.137.1"
+#define RT_LWIP_MSKADDR "255.255.255.0"
+/* end of Static IPv4 Address */
+#define RT_LWIP_UDP
+#define RT_LWIP_TCP
+#define RT_LWIP_RAW
+#define RT_MEMP_NUM_NETCONN 8
+#define RT_LWIP_PBUF_NUM 16
+#define RT_LWIP_RAW_PCB_NUM 4
+#define RT_LWIP_UDP_PCB_NUM 4
+#define RT_LWIP_TCP_PCB_NUM 4
+#define RT_LWIP_TCP_SEG_NUM 40
+#define RT_LWIP_TCP_SND_BUF 8192
+#define RT_LWIP_TCP_WND 8192
+#define RT_LWIP_TCPTHREAD_PRIORITY 10
+#define RT_LWIP_TCPTHREAD_MBOX_SIZE 8
+#define RT_LWIP_TCPTHREAD_STACKSIZE 2048
+#define RT_LWIP_ETHTHREAD_PRIORITY 12
+#define RT_LWIP_ETHTHREAD_STACKSIZE 1024
+#define RT_LWIP_ETHTHREAD_MBOX_SIZE 8
+#define RT_LWIP_REASSEMBLY_FRAG
+#define LWIP_NETIF_STATUS_CALLBACK 1
+#define LWIP_NETIF_LINK_CALLBACK 1
+#define RT_LWIP_NETIF_NAMESIZE 6
+#define SO_REUSE 1
+#define LWIP_SO_RCVTIMEO 1
+#define LWIP_SO_SNDTIMEO 1
+#define LWIP_SO_RCVBUF 1
+#define LWIP_SO_LINGER 0
+#define LWIP_NETIF_LOOPBACK 0
+#define RT_LWIP_USING_PING
 /* end of Network */
 
 /* Memory protection */
@@ -200,6 +287,7 @@
 
 /* Utilities */
 
+#define RT_USING_RYM
 #define RT_USING_ULOG
 #define ULOG_OUTPUT_LVL_D
 #define ULOG_OUTPUT_LVL 7
@@ -209,6 +297,8 @@
 /* log format */
 
 #define ULOG_OUTPUT_FLOAT
+#define ULOG_USING_COLOR
+#define ULOG_OUTPUT_TIME
 #define ULOG_OUTPUT_LEVEL
 #define ULOG_OUTPUT_TAG
 /* end of log format */
@@ -224,203 +314,6 @@
 
 /* end of RT-Thread Utestcases */
 
-/* RT-Thread online packages */
-
-/* IoT - internet of things */
-
-
-/* Wi-Fi */
-
-/* Marvell WiFi */
-
-/* end of Marvell WiFi */
-
-/* Wiced WiFi */
-
-/* end of Wiced WiFi */
-
-/* CYW43012 WiFi */
-
-/* end of CYW43012 WiFi */
-
-/* BL808 WiFi */
-
-/* end of BL808 WiFi */
-
-/* CYW43439 WiFi */
-
-/* end of CYW43439 WiFi */
-/* end of Wi-Fi */
-
-/* IoT Cloud */
-
-/* end of IoT Cloud */
-/* end of IoT - internet of things */
-
-/* security packages */
-
-/* end of security packages */
-
-/* language packages */
-
-/* JSON: JavaScript Object Notation, a lightweight data-interchange format */
-
-/* end of JSON: JavaScript Object Notation, a lightweight data-interchange format */
-
-/* XML: Extensible Markup Language */
-
-/* end of XML: Extensible Markup Language */
-/* end of language packages */
-
-/* multimedia packages */
-
-/* LVGL: powerful and easy-to-use embedded GUI library */
-
-/* end of LVGL: powerful and easy-to-use embedded GUI library */
-
-/* u8g2: a monochrome graphic library */
-
-/* end of u8g2: a monochrome graphic library */
-/* end of multimedia packages */
-
-/* tools packages */
-
-/* end of tools packages */
-
-/* system packages */
-
-/* enhanced kernel services */
-
-/* end of enhanced kernel services */
-
-/* acceleration: Assembly language or algorithmic acceleration packages */
-
-/* end of acceleration: Assembly language or algorithmic acceleration packages */
-
-/* CMSIS: ARM Cortex-M Microcontroller Software Interface Standard */
-
-/* end of CMSIS: ARM Cortex-M Microcontroller Software Interface Standard */
-
-/* Micrium: Micrium software products porting for RT-Thread */
-
-/* end of Micrium: Micrium software products porting for RT-Thread */
-/* end of system packages */
-
-/* peripheral libraries and drivers */
-
-/* HAL & SDK Drivers */
-
-/* STM32 HAL & SDK Drivers */
-
-/* end of STM32 HAL & SDK Drivers */
-
-/* Infineon HAL Packages */
-
-/* end of Infineon HAL Packages */
-
-/* Kendryte SDK */
-
-/* end of Kendryte SDK */
-
-/* WCH HAL & SDK Drivers */
-
-/* end of WCH HAL & SDK Drivers */
-
-/* AT32 HAL & SDK Drivers */
-
-/* end of AT32 HAL & SDK Drivers */
-
-/* HC32 DDL Drivers */
-
-/* end of HC32 DDL Drivers */
-
-/* NXP HAL & SDK Drivers */
-
-#define PKG_USING_NXP_MCX_CMSIS_DRIVER
-#define PKG_USING_NXP_MCX_CMSIS_DRIVER_LATEST_VERSION
-#define PKG_USING_NXP_MCX_SERIES_DRIVER
-#define PKG_USING_NXP_MCX_SERIES_DRIVER_LATEST_VERSION
-/* end of NXP HAL & SDK Drivers */
-/* end of HAL & SDK Drivers */
-
-/* sensors drivers */
-
-/* end of sensors drivers */
-
-/* touch drivers */
-
-/* end of touch drivers */
-/* end of peripheral libraries and drivers */
-
-/* AI packages */
-
-/* end of AI packages */
-
-/* Signal Processing and Control Algorithm Packages */
-
-/* end of Signal Processing and Control Algorithm Packages */
-
-/* miscellaneous packages */
-
-/* project laboratory */
-
-/* end of project laboratory */
-
-/* samples: kernel and components samples */
-
-/* end of samples: kernel and components samples */
-
-/* entertainment: terminal games and other interesting software packages */
-
-/* end of entertainment: terminal games and other interesting software packages */
-/* end of miscellaneous packages */
-
-/* Arduino libraries */
-
-
-/* Projects and Demos */
-
-/* end of Projects and Demos */
-
-/* Sensors */
-
-/* end of Sensors */
-
-/* Display */
-
-/* end of Display */
-
-/* Timing */
-
-/* end of Timing */
-
-/* Data Processing */
-
-/* end of Data Processing */
-
-/* Data Storage */
-
-/* Communication */
-
-/* end of Communication */
-
-/* Device Control */
-
-/* end of Device Control */
-
-/* Other */
-
-/* end of Other */
-
-/* Signal IO */
-
-/* end of Signal IO */
-
-/* Uncategorized */
-
-/* end of Arduino libraries */
-/* end of RT-Thread online packages */
-
 /* Hardware Drivers Config */
 
 #define SOC_MCXA156
@@ -428,13 +321,51 @@
 /* On-chip Peripheral Drivers */
 
 #define BSP_USING_PIN
+#define BSP_USING_ONCHIP_FLASH
 #define BSP_USING_UART
 #define BSP_USING_UART0
+#define BSP_USING_I2C
+#define BSP_USING_I2C0
+#define BSP_USING_I2C1
+#define BSP_USING_SPI
+#define BSP_USING_SPI1
+#define BSP_USING_FS_ON_FLASH
 /* end of On-chip Peripheral Drivers */
 
 /* Board extended module Drivers */
 
+#define BSP_USING_P3T1755
+#define P3T1755_I2C_BUS_NAME "i2c0"
+#define P3T1755_I2C_ADDRESS 0x48
 /* end of Board extended module Drivers */
 /* end of Hardware Drivers Config */
+
+/* PKG config */
+
+#define PKG_USING_LITTLEFS
+#define PKG_USING_P3T17551
+
+/* IoT - internet of things */
+
+#define PKG_USING_PAHOMQTT
+#define PAHOMQTT_PIPE_MODE
+#define RT_PKG_MQTT_THREAD_STACK_SIZE 4096
+#define PKG_PAHOMQTT_SUBSCRIBE_HANDLERS 1
+#define MQTT_DEBUG
+#define PKG_USING_NETUTILS
+#define NETUTILS_NTP
+#define NETUTILS_NTP_TIMEZONE 8
+#define NETUTILS_NTP_HOSTNAME "cn.ntp.org.cn"
+#define NETUTILS_NTP_HOSTNAME2 "ntp.ntsc.ac.cn"
+#define NETUTILS_NTP_HOSTNAME3 "edu.ntp.org.cn"
+#define NETUTILS_IPERF
+#define NETUTILS_TFTP
+/* end of IoT - internet of things */
+
+/* tools packages */
+
+#define PKG_USING_CJSON
+/* end of tools packages */
+/* end of PKG config */
 
 #endif

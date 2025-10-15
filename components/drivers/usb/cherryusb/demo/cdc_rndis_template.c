@@ -189,14 +189,17 @@ void usbd_rndis_data_send_done(uint32_t len)
 #error rndis must enable RT_LWIP_DHCP
 #endif
 
-#ifndef LWIP_USING_DHCPD
-#error rndis must enable LWIP_USING_DHCPD
-#endif
+/* Comment out DHCP server requirement - we want to be a DHCP client */
+// #ifndef LWIP_USING_DHCPD
+// #error rndis must enable LWIP_USING_DHCPD
+// #endif
 
 #include <rtthread.h>
 #include <rtdevice.h>
 #include <netif/ethernetif.h>
+#ifdef LWIP_USING_DHCPD
 #include <dhcp_server.h>
+#endif
 
 struct eth_device rndis_dev;
 
@@ -243,14 +246,45 @@ rt_err_t rt_usbd_rndis_eth_tx(rt_device_t dev, struct pbuf *p)
 
 void rndis_lwip_init(void)
 {
+#ifdef RT_USING_DEVICE_OPS
+    rndis_dev.parent.ops = &(const struct rt_device_ops){
+        .init = NULL,
+        .open = NULL,
+        .close = NULL,
+        .read = NULL,
+        .write = NULL,
+        .control = rt_usbd_rndis_control
+    };
+#else
     rndis_dev.parent.control = rt_usbd_rndis_control;
+#endif
     rndis_dev.eth_rx = rt_usbd_rndis_eth_rx;
     rndis_dev.eth_tx = rt_usbd_rndis_eth_tx;
 
     eth_device_init(&rndis_dev, "u0");
 
     eth_device_linkchange(&rndis_dev, RT_TRUE);
+
+    /* Use DHCP client mode instead of DHCP server */
+#ifdef LWIP_USING_DHCPD
+    /* Original code: start DHCP server (for PC to get IP from board) */
+    /* dhcpd_start("u0"); */
+    rt_kprintf("[RNDIS] Starting as DHCP server mode\n");
     dhcpd_start("u0");
+#else
+    /* New code: start DHCP client (for board to get IP from PC) */
+    rt_kprintf("[RNDIS] Starting as DHCP client mode\n");
+    extern void dhcp_start(struct netif *netif);
+    struct netif *netif = netif_list;
+    while (netif != RT_NULL) {
+        if (strncmp("u0", netif->name, 2) == 0) {
+            dhcp_start(netif);
+            rt_kprintf("[RNDIS] DHCP client started on interface u0\n");
+            break;
+        }
+        netif = netif->next;
+    }
+#endif
 }
 
 void usbd_rndis_data_recv_done(uint32_t len)

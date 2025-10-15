@@ -37,6 +37,12 @@ if GetDepend('BSP_USING_PWM'):
 if GetDepend('BSP_USING_FLASH'):
     src += ['drv_chipflash.c']
 
+if GetDepend('BSP_USING_P3T1755'):
+    src += ['drv_p3t1755.c']
+
+if GetDepend('RT_USING_CHERRYUSB'):
+    src += ['drv_usb.c']
+
 path =  [cwd,cwd + '/config']
 
 group = DefineGroup('Drivers', src, depend = [''], CPPPATH = path)

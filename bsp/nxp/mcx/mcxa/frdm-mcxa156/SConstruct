@@ -124,6 +124,17 @@ objs = PrepareBuilding(env, RTT_ROOT, has_libcpu=False)
 # 通过执行drivers目录下的SConscript脚本来收集驱动文件
 objs.extend(SConscript(os.path.join(libraries_path_prefix, 'drivers', 'SConscript')))
 
+# 添加packages目录下的NXP SDK包
+# 包括CMSIS和MCX系列驱动
+if os.path.exists('packages/nxp-mcx-cmsis-latest/SConscript'):
+    objs.extend(SConscript('packages/nxp-mcx-cmsis-latest/SConscript'))
+if os.path.exists('packages/nxp-mcx-series-latest/SConscript'):
+    objs.extend(SConscript('packages/nxp-mcx-series-latest/SConscript'))
+
+# 添加LittleFS包
+if os.path.exists('packages/littlefs/SConscript'):
+    objs.extend(SConscript('packages/littlefs/SConscript'))
+
 # 执行构建过程
 # 根据收集到的所有源文件（objs）生成目标文件（TARGET）
 DoBuilding(TARGET, objs)
