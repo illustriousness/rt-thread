@@ -1,50 +1,140 @@
 
-# Kconfig file for package fal
+# Kconfig file for FAL (Flash Abstraction Layer) package
 menuconfig RT_USING_FAL
-    bool "FAL: flash abstraction layer"
+    bool "FAL: Flash Abstraction Layer"
     default n
+    help
+        FAL (Flash Abstraction Layer) is a flash device management framework that provides
+        a unified interface for accessing different types of flash memory devices.
+
+        Features:
+        - Unified flash device access interface
+        - Partition management and table support
+        - Support for multiple flash device types (SPI NOR, NAND, etc.)
+        - Portable across different hardware platforms
+        - Integration with RT-Thread file systems
+
+        This option enables the FAL framework for flash memory management in RT-Thread.
 
 if RT_USING_FAL
     config FAL_USING_DEBUG
         bool "Enable debug log output"
         default y if RT_USING_DEBUG
         default n
+        help
+            Enable debug logging functionality for the FAL (Flash Abstraction Layer).
+
+            When enabled, FAL will output detailed debug information including:
+            - Flash device operations status
+            - Partition creation and management operations
+            - Error conditions and warnings
+            - Device initialization information
+
+            This option is automatically enabled when RT_USING_DEBUG is set to y.
+            Debug output helps developers diagnose flash-related issues during development.
 
     config FAL_PART_HAS_TABLE_CFG
-        bool "FAL partition table config has defined on 'fal_cfg.h'"
+        bool "Use partition table defined in fal_cfg.h"
         default y
         help
-            If defined partition table on 'fal_cfg.h' please enable this option.
-            When this option is disable, it will auto find and load the partition table
-            on a specified location in flash partition.
+            Select this option when the flash partition table is manually defined
+            in the 'fal_cfg.h' configuration file.
+
+            When enabled (y): The partition table information is read from the static
+            definitions in fal_cfg.h. This is suitable for systems with fixed partition
+            layouts that are known at compile time.
+
+            When disabled (n): FAL will automatically search for and load a partition
+            table from a specified location in flash memory. This is useful for dynamic
+            partition configurations or when the partition table needs to be stored
+            persistently in flash.
+
+            This option affects how the system initializes and discovers flash partitions
+            during startup.
 
     if !FAL_PART_HAS_TABLE_CFG
 
         config FAL_PART_TABLE_FLASH_DEV_NAME
-            string "The flash device which saving partition table"
+            string "Flash device name for partition table storage"
             default "onchip"
-             help
-                It will auto find the partition table on this flash device.
+            help
+                Specify the name of the flash device where the partition table is stored.
+
+                FAL will search for the partition table on this specific flash device.
+                The device name must match one of the flash devices registered with FAL.
+
+                Examples:
+                - "onchip" for internal on-chip flash
+                - "norflash0" for external SPI NOR flash
+                - "nandflash" for NAND flash devices
+
+                This option is only relevant when FAL_PART_HAS_TABLE_CFG is disabled,
+                allowing dynamic partition table discovery from flash.
 
         config FAL_PART_TABLE_END_OFFSET
-            int "The patition table end address relative to flash device offset."
+            int "Partition table search end offset"
             default 65536
             help
-                The auto find and load the partition table process is forward from this
-                offset address on flash.
+                Specify the end offset address (relative to the flash device start) from which
+                FAL will begin searching backward for the partition table.
+
+                FAL searches for the partition table by scanning backward from this offset
+                address toward the beginning of the flash device. The search continues until
+                a valid partition table is found or the beginning of flash is reached.
+
+                Default: 65536 (64KB) - Suitable for most applications where the partition
+                table is stored near the end of the first 64KB of flash.
+
+                Considerations:
+                - Ensure this offset doesn't overlap with critical system data or code
+                - Larger values may increase search time on devices with large flash
+                - The partition table must be located before this offset address
+
+                This option is only used when FAL_PART_HAS_TABLE_CFG is disabled.
 
     endif
 
     config FAL_USING_SFUD_PORT
-        bool "FAL uses SFUD drivers"
+        bool "Enable SFUD (Serial Flash Universal Driver) support"
         default n
         help
-            The fal_flash_sfud_port.c in the samples\porting directory will be used.
+            Enable SFUD driver integration for accessing SPI NOR flash devices.
+
+            SFUD (Serial Flash Universal Driver) is a universal SPI NOR flash driver
+            that supports a wide range of SPI NOR flash chips from various manufacturers.
+
+            When enabled, FAL will use the SFUD porting implementation (fal_flash_sfud_port.c)
+            from the samples/porting directory to interface with SFUD-compatible flash devices.
+
+            Benefits:
+            - Automatic flash chip detection and initialization
+            - Support for many SPI NOR flash manufacturers (Winbond, GigaDevice, MXIC, etc.)
+            - Unified interface for different flash operations
+            - Simplified flash device management
+
+            Use this option when your system uses SPI NOR flash devices that are
+            compatible with the SFUD driver framework.
 
     if FAL_USING_SFUD_PORT
         config FAL_USING_NOR_FLASH_DEV_NAME
-            string "The name of the device used by FAL"
+            string "SFUD NOR flash device name for FAL"
             default "norflash0"
+            help
+                Specify the name of the SPI NOR flash device that FAL should use
+                when SFUD support is enabled.
+
+                This name must match the device name registered by the SFUD driver
+                in your RT-Thread system. The device name is typically set during
+                SFUD initialization.
+
+                Common examples:
+                - "norflash0" - Default for first SPI NOR flash
+                - "norflash1" - For second SPI NOR flash (if present)
+                - "spiflash" - Custom device name
+
+                This option is only available when FAL_USING_SFUD_PORT is enabled.
+                Make sure the specified device name matches your actual hardware
+                configuration and SFUD driver setup.
     endif
 
 endif
