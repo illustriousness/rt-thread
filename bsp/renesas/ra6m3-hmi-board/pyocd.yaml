@@ -1,0 +1,2 @@
+# Project-local pyOCD defaults for RA6M3 HMI board.
+target_override: r7fa6m3ah

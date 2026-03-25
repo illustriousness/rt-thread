@@ -1,0 +1,63 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "RA6M3 HMI Debug (pyOCD CMSIS-DAP)",
+            "type": "cortex-debug",
+            "request": "launch",
+            "servertype": "external",
+            "cwd": "${workspaceFolder}",
+            "executable": "${workspaceFolder}/rtthread.elf",
+            "armToolchainPath": "/usr/bin",
+            "toolchainPrefix": "arm-none-eabi",
+            "gdbPath": "/usr/bin/arm-none-eabi-gdb",
+            "objdumpPath": "/usr/bin/arm-none-eabi-objdump",
+            "nmPath": "/usr/bin/arm-none-eabi-nm",
+            "gdbTarget": "localhost:50000",
+            "runToEntryPoint": "main",
+            "preLaunchTask": "debug:prepare",
+            "postDebugTask": "pyocd:stop",
+            "showDevDebugOutput": "raw",
+            "postRestartCommands": [
+                "monitor reset halt"
+            ]
+        },
+        {
+            "name": "RA6M3 HMI Attach (pyOCD CMSIS-DAP)",
+            "type": "cortex-debug",
+            "request": "attach",
+            "servertype": "pyocd",
+            "serverpath": "/usr/bin/pyocd",
+            "cwd": "${workspaceFolder}",
+            "executable": "${workspaceFolder}/rtthread.elf",
+            "armToolchainPath": "/usr/bin",
+            "toolchainPrefix": "arm-none-eabi",
+            "gdbPath": "/usr/bin/arm-none-eabi-gdb",
+            "objdumpPath": "/usr/bin/arm-none-eabi-objdump",
+            "nmPath": "/usr/bin/arm-none-eabi-nm",
+            "targetId": "r7fa6m3ah",
+            "showDevDebugOutput": "raw",
+            "serverArgs": [
+                "--frequency",
+                "4000000"
+            ]
+        },
+        {
+            "name": "RA6M3 HMI Attach (external pyOCD :50000)",
+            "type": "cortex-debug",
+            "request": "attach",
+            "servertype": "external",
+            "cwd": "${workspaceFolder}",
+            "executable": "${workspaceFolder}/rtthread.elf",
+            "armToolchainPath": "/usr/bin",
+            "toolchainPrefix": "arm-none-eabi",
+            "gdbPath": "/usr/bin/arm-none-eabi-gdb",
+            "objdumpPath": "/usr/bin/arm-none-eabi-objdump",
+            "nmPath": "/usr/bin/arm-none-eabi-nm",
+            "gdbTarget": "localhost:50000",
+            "preLaunchTask": "pyocd:start",
+            "postDebugTask": "pyocd:stop",
+            "showDevDebugOutput": "raw"
+        }
+    ]
+}

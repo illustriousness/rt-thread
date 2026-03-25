@@ -1,0 +1,67 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "type": "shell",
+            "command": "scons -j$(nproc)",
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "clean",
+            "type": "shell",
+            "command": "scons -c",
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "rebuild",
+            "type": "shell",
+            "command": "scons -c && scons -j$(nproc)",
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "flash:pyocd",
+            "type": "shell",
+            "command": "pyocd flash --target r7fa6m3ah --erase chip rtthread.elf",
+            "dependsOn": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "pyocd:start",
+            "type": "shell",
+            "command": "${workspaceFolder}/.vscode/scripts/start-pyocd.sh",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "pyocd:stop",
+            "type": "shell",
+            "command": "${workspaceFolder}/.vscode/scripts/stop-pyocd.sh",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "debug:prepare",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "build",
+                "pyocd:start"
+            ],
+            "problemMatcher": []
+        }
+    ]
+}
