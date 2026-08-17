@@ -1,0 +1,10 @@
+/.sconsign.dblite
+/__pycache__/
+/build/
+/rtthread.asm
+/rtthread.bin
+/rtthread.elf
+/rtthread.map
+/rtthread-smp.img
+/rtthread-amp-f01.img
+/rtthread-*.bin

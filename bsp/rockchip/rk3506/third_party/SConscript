@@ -1,0 +1,13 @@
+from building import *
+
+if not GetDepend('BSP_USING_RPMSG_VETH'):
+    Return('group')
+
+cwd = GetCurrentDir()
+root = cwd + '/rpmsg-lite'
+src = Glob(root + '/src/*.c')
+path = [root + '/include']
+
+group = DefineGroup('RPMsg-Lite', src, depend=[''], CPPPATH=path)
+
+Return('group')

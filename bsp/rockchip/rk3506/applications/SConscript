@@ -1,0 +1,15 @@
+from building import *
+import os
+
+cwd = GetCurrentDir()
+src = ['main.c']
+if GetDepend('BSP_USING_AMP_SHM'):
+    src += ['amp_shm_service.c']
+if GetDepend('BSP_USING_RPMSG_VETH'):
+    src += ['rpmsg_veth_service.c']
+include = os.path.abspath(os.path.join(cwd, '..', 'include'))
+CPPPATH = [cwd, include]
+
+group = DefineGroup('Applications', src, depend = [''], CPPPATH = CPPPATH)
+
+Return('group')

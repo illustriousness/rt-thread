@@ -1,0 +1,35 @@
+/dts-v1/;
+
+/ {
+	description = "RK3506 open RT-Thread AMP f01 image";
+	#address-cells = <1>;
+
+	images {
+		rtthread {
+			description = "Open RT-Thread single-core f01";
+			data = /incbin/("rtthread-amp-f01.bin");
+			type = "firmware";
+			compression = "none";
+			arch = "arm";
+			os = "rtos";
+			cpu = <0x00000f01>;
+			thumb = <0>;
+			hyp = <0>;
+			load = <0x05000000>;
+			entry = <0x05000000>;
+
+			hash {
+				algo = "sha256";
+			};
+		};
+	};
+
+	configurations {
+		default = "conf";
+
+		conf {
+			description = "RK3506 f01 RT-Thread AMP";
+			loadables = "rtthread";
+		};
+	};
+};

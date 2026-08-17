@@ -1,0 +1,38 @@
+mainmenu "RT-Thread Project Configuration"
+
+BSP_DIR := .
+RTT_DIR := ../../..
+PKGS_DIR := packages
+
+source "$(RTT_DIR)/Kconfig"
+source "$(BSP_DIR)/drivers/Kconfig"
+osource "$PKGS_DIR/Kconfig"
+
+config SOC_RK3506
+    bool
+    select ARCH_ARM_CORTEX_A7
+    select RT_USING_GIC_V2
+    select RT_USING_COMPONENTS_INIT
+    select RT_USING_USER_MAIN
+    default y
+
+config BSP_CPU_AFF0_BASE
+    hex "Physical CPU Aff0 used as logical CPU0"
+    default 0x0
+
+config BSP_MEMORY_BASE
+    hex "RT-Thread memory base"
+    default 0x04000000
+
+config BSP_MEMORY_SIZE
+    hex "RT-Thread memory size"
+    default 0x06000000
+
+config BSP_USING_AMP_SHM
+    bool "Enable the RK3506 shared-memory AMP service"
+    default n
+
+config BSP_USING_RPMSG_VETH
+    bool "Enable RPMsg virtual Ethernet on the AMP core"
+    depends on !RT_USING_SMP
+    default n

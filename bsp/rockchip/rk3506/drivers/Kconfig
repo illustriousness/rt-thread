@@ -1,0 +1,18 @@
+menu "RK3506 BSP Drivers"
+
+config BSP_USING_UART1
+    bool "Enable UART1 console"
+    select RT_USING_SERIAL
+    select RT_USING_SERIAL_V1
+    default y
+
+config BSP_UART_CLOCK_HZ
+    int "UART input clock"
+    default 24000000
+    depends on BSP_USING_UART1
+
+config BSP_GENERIC_TIMER_IRQ
+    int "ARM generic timer GIC INTID"
+    default 30
+
+endmenu
